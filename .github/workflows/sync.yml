@@ -1,0 +1,29 @@
+name: Sync All Spaces
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # Sync every 6 hours
+  workflow_dispatch:        # Manual trigger
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Pull Changes
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          
+          # Pull from Hugging Face
+          git subtree pull --prefix=MediMateAIAgent https://huggingface.co/spaces/Sameer747/MediMateAIAgent main --squash
+          git subtree pull --prefix=MediMateAIAgentWomensHealth https://huggingface.co/spaces/Sameer747/MediMateAIAgentWomensHealth main --squash
+          git subtree pull --prefix=MediMateAIAgentElderly https://huggingface.co/spaces/Sameer747/MediMateAIAgentElderly main --squash
+          git subtree pull --prefix=MediMateAIAgentChildHealthAndGrowth https://huggingface.co/spaces/Sameer747/MediMateAIAgentChildHealthAndGrowth main --squash
+
+          # Push to GitHub
+          git push github main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
