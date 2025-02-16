@@ -11,20 +11,20 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Critical for subtree history
+          fetch-depth: 0  # Fetch full history
 
-      - name: Pull Changes
+      - name: Configure Git
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          
-          # Pull from Hugging Face with explicit authentication
+
+      - name: Pull from Hugging Face
+        run: |
+          git pull github main  # Sync local first
           git subtree pull --prefix=MediMateAIAgent https://huggingface.co/spaces/Sameer747/MediMateAIAgent main --squash
           git subtree pull --prefix=MediMateAIAgentWomensHealth https://huggingface.co/spaces/Sameer747/MediMateAIAgentWomensHealth main --squash
           git subtree pull --prefix=MediMateAIAgentElderly https://huggingface.co/spaces/Sameer747/MediMateAIAgentElderly main --squash
           git subtree pull --prefix=MediMateAIAgentChildHealthAndGrowth https://huggingface.co/spaces/Sameer747/MediMateAIAgentChildHealthAndGrowth main --squash
-
-          # Push to GitHub
           git push github main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
